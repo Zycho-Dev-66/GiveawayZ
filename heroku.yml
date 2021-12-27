@@ -1,0 +1,3 @@
+builder:
+  docker:
+    worker: Dockerfile
