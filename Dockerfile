@@ -3,5 +3,5 @@ RUN apt-get update && apt-get upgrade -y
 RUN python3.9 -m pip install -U pip
 COPY . /app
 WORKDIR /app
-RUN python3.9 -m pip install -r -U requirements.txt
+RUN python3.9 -m pip install -r requirements.txt
 CMD python bot.py
