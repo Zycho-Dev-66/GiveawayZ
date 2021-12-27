@@ -1,0 +1,120 @@
+{
+    "name": "Tzunami Spambot",
+    "logo": "https://telegra.ph/file/21107ce33c456b36b0e1c.png",
+    "description": "A Powerful Telegram giveaways bot based on the python-telegram-bot API. Powered by Team Zyntax and Team DFX",
+    "keywords": [
+        "giveawayz",
+        "telegram",
+        "zyntax",
+        "dfx"
+    ],
+    "repositary": "https://github.com/Zycho-Dev-66/GiweawayZ",
+    "stack": "container",
+    "buildpacks": [
+        {
+            "url": "heroku/python"
+        }
+    ],
+    "env": {
+        "API_ID": {
+            "description": "Get the Api id from my.telegram.org",
+            "required": true
+        },
+        "API_HASH": {
+            "description": "Get the Api hash from my.telegram.org",
+            "required": true
+        },
+        "SESSION": {
+            "description": "Get a Telethon session from running session.py locally or on repl.it",
+            "required": true
+        },
+        "TOKEN": {
+            "description": "Get a Telegram bot token from @BotFather",
+            "required": true
+        },
+        "MONGODB_URI": {
+            "description": "Get a MongoDB URI for python as Atlas Admin and paste it here",
+            "required": true
+        },
+        "TEAM": {
+            "description": "Your team or the organization",
+            "required": false,
+            "value": "DFX x ZYNTAX"
+        },
+        "IMAGE": {
+            "description": "A telegraph link of your logo",
+            "required": false,
+            "value": "https://telegra.ph/file/21107ce33c456b36b0e1c.png"
+        },
+        "GROUP_1": {
+            "description": "You can add 1 group and 2 other groups or channels. First one will be used for membership checking",
+            "required": false,
+            "value": "DFX FRIENDZONE"
+        },
+        "USERNAME_1": {
+            "description": "Username of the first group",
+            "required": false,
+            "value": "DFX_friendzone"
+        },
+        "GROUP_2": {
+            "description": "Second group or channel (optional)",
+            "required": false,
+            "value": "ZYNTAX CHAT ZONE"
+        },
+        "USERNAME_2": {
+            "description": "Username of the second group or channel (optional)",
+            "required": false,
+            "value": "Zyntax_Chat_Zone"
+        },
+        "GROUP_3": {
+            "description": "Third group or channel (optional)",
+            "required": false,
+            "value": "ZYNTAX NATION"
+        },
+        "USERNAME_3": {
+            "description": "Username of the third group or channel (optional)",
+            "required": false,
+            "value": "ZYNTAX NATION"
+        },
+        "PROOFS_CHANNEL": {
+            "description": "Username of the proofs channel",
+            "required": true
+        },
+        "PROOFS_ID": {
+            "description": "ID of the proofs channel",
+            "required": true
+        },
+        "ABOUT": {
+            "description": "Description of your bot",
+            "required": false,
+            "value": "GiveawayZ Bot is a collaborated telegram giveaway bot project developed by Team Zyntax and Team DFX.. Credits @Zycho_66 and @DR_STRANGE_DFX"
+        },
+        "HOWTO_HEADER": {
+            "description": "How-To Description header",
+            "required": false,
+            "value": "*💡 ඔයා තාම දන්නේ නැත්නම් මේ බොට්ගෙන් වැඩ ගන්න විදිය මෙන්න මෙහෙමයි*"
+        },
+        "HOWTO_CONTEXT": {
+            "description": "How-To Description text",
+            "required": false,
+            "value": "පළවෙනියටම ඔය දාලා තියන චැනල්, ගෘෘප් වලට අනිවාරෙම් ජොයින් වෙන්න ඔන.චැනල් වලට ජොයින් උනාට පස්සේ Verify කරලා මෙනු ඒකෙන් Refferal ලින්ක් 1ක් අරන් ඒක කට්ටියට Share කරලා Points රැස්කරගන්න..ඔයා ගාව තියෙන Points පාවිච්චි කරලා තමන් කැමති Account 1ක් Withdraw කරගන්න පුලුවන්"
+        },
+        "HOWTO_FOOTER": {
+            "description": "How-To Description footer",
+            "required": false,
+            "value": "*⚠ ගොඩක් වෙලාවට Admins ලා ඔන්ලයින් ඉන්නේ රෑට නිසා Accounts දෙන්නෙ රෑට.. අපි පුලුවන්තරම් උත්සහ කරනවා පැය 72ක් තුළ Accounts දෙන්න.. ඒත් පරක්කු උනොත් Admins ලගෙ ඉන්බොක්ස් ගිහින් කරදර කරන්න යන්නෙපා බොට්ගෙන් බෑන් වෙයි..⚠*"
+        },
+        "ACC_LIST": {
+            "description": "Premium Accounts list seperated by spaces. Max < 5",
+            "required": true
+        },
+        "POINT_LIST": {
+            "description": "Corresponding Point list for Accounts seperated by spaces. Max < 5",
+            "required": true
+        },
+        "OWNER": {
+            "description": "Your Telegram username",
+            "required": true
+        }
+    }
+}
