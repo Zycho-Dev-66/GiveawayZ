@@ -87,7 +87,7 @@
         "ABOUT": {
             "description": "Description of your bot",
             "required": false,
-            "value": "GiveawayZ Bot is a collaborated telegram giveaway bot project developed by Team Zyntax and Team DFX.. Credits @Zycho_66 and @DR_STRANGE_DFX"
+            "value": "GiveawayZ Bot is a collaborated telegram giveaway bot project developed by Team Zyntax and Team DFX.."
         },
         "HOWTO_HEADER": {
             "description": "How-To Description header",
