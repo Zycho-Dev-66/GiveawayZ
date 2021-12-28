@@ -39,6 +39,8 @@ from config import (
 
 q_panel = 0
 target = 0
+q_type = ''
+
 starttime = datetime.now()
 
 # Enable logging
@@ -51,6 +53,7 @@ def start(update: Update, context: CallbackContext) -> None:
     global userdb
     payload = context.args
     username = str(update.message.from_user.username)
+    chatid = update.effective_chat.id
     item = ""
     bot = context.bot
     url = helpers.create_deep_linked_url(bot.username, username)
@@ -74,7 +77,7 @@ def start(update: Update, context: CallbackContext) -> None:
 
             if status == "banned":
                 update.message.reply_photo(
-                    photo=IMAGE, caption=f'*❌ Hey @{username}, You are banned from our community!\n\nAsk an admin to unban you..*', parse_mode='Markdown')
+                    photo=IMAGE, caption=f'*❌ Sorry! @{username} is banned from our community!\n\nAsk an admin to unban..*', parse_mode='Markdown')
             else:
                 if ref_val > 0:
                     update.message.reply_photo(photo=IMAGE, caption="*❌ One refferal link can be used only once by a user!*",
@@ -89,11 +92,30 @@ def start(update: Update, context: CallbackContext) -> None:
                     userdb.update_one({"username": f'{item}'}, {
                         "$set": {"reflist": reflistvar}})
 
+                    chat = chatdb.find_one({"chat": chatid})
+                    try:
+                        joined = chat['date']
+                    except:
+                        chat_ins = {
+                            "chat": chatid,
+                            "date": datetime.now().strftime('%x')
+                        }
+                        chatdb.insert_one(chat_ins)
+
                     update.message.reply_photo(photo=IMAGE, caption="*🔥 Hi! @{} welcome to the {} Premium Acc Giveaways..\n\nYou were invited by @{}*".format(username, TEAM, item),
                                                reply_markup=InlineKeyboardMarkup(
                         [[InlineKeyboardButton(text="💰 Earn 💰", callback_data='Earn')]]), parse_mode='Markdown')
 
     else:
+        chat = chatdb.find_one({"chat": chatid})
+        try:
+            joined = chat['date']
+        except:
+            chat_ins = {
+                "chat": chatid,
+                "date": datetime.now().strftime('%x')
+            }
+            chatdb.insert_one(chat_ins)
         update.message.reply_photo(photo=IMAGE, caption=f"""
 *🔥Welcome to the {TEAM} Premium Acc Generator Bot!*\n
 You were not invited!
@@ -107,28 +129,55 @@ def query_handler(update: Update, context: CallbackContext) -> None:
     global userdb
     global user
     global starttime
+    global q_type
+    global q_panel
+
     query = update.callback_query
     query.answer()
     bot = context.bot
     userid = query.from_user.id
     username = query.from_user.username
     if query.data == "Earn":
-        query.edit_message_caption("""
+        try:
+            user = userdb.find_one({"username": f"{username}"})
+            if user['status'] == 'banned':
+                query.edit_message_caption(
+                    """❌ You are Banned from our community! ❌""", parse_mode='Markdown')
+            else:
+                query.edit_message_caption("""
 *💡 You must join all our channels to use this bot..\n
 Join and press [♻ VERIFY ♻]*
 """, parse_mode='Markdown',
-                                   reply_markup=InlineKeyboardMarkup(
-                                       [
-                                           [InlineKeyboardButton(
-                                               text=f"📌 {GROUP} 📌", url=f'http://t.me/{USERNAME}')],
-                                           [InlineKeyboardButton(
-                                               text=f"📌 {GROUP2} 📌", url=f'http://t.me/{USERNAME2}')],
-                                           [InlineKeyboardButton(
-                                               text=f"📌 {GROUP3} 📌", url=f'http://t.me/{USERNAME3}')],
-                                           [InlineKeyboardButton(
-                                               text="♻ VERIFY ♻", callback_data='Verify')],
-                                       ]
-                                   ))
+                                           reply_markup=InlineKeyboardMarkup(
+                                               [
+                                                   [InlineKeyboardButton(
+                                                    text=f"📌 {GROUP} 📌", url=f'http://t.me/{USERNAME}')],
+                                                   [InlineKeyboardButton(
+                                                    text=f"📌 {GROUP2} 📌", url=f'http://t.me/{USERNAME2}')],
+                                                   [InlineKeyboardButton(
+                                                    text=f"📌 {GROUP3} 📌", url=f'http://t.me/{USERNAME3}')],
+                                                   [InlineKeyboardButton(
+                                                    text="♻ VERIFY ♻", callback_data='Verify')],
+                                               ]
+                                           ))
+        except:
+            query.edit_message_caption("""
+*💡 You must join all our channels to use this bot..\n
+Join and press [♻ VERIFY ♻]*
+""", parse_mode='Markdown',
+                                       reply_markup=InlineKeyboardMarkup(
+                                           [
+                                               [InlineKeyboardButton(
+                                                text=f"📌 {GROUP} 📌", url=f'http://t.me/{USERNAME}')],
+                                               [InlineKeyboardButton(
+                                                text=f"📌 {GROUP2} 📌", url=f'http://t.me/{USERNAME2}')],
+                                               [InlineKeyboardButton(
+                                                text=f"📌 {GROUP3} 📌", url=f'http://t.me/{USERNAME3}')],
+                                               [InlineKeyboardButton(
+                                                text="♻ VERIFY ♻", callback_data='Verify')],
+                                           ]
+                                       ))
+
     if query.data == "Verify":
         query.edit_message_caption(
             "*♻ Verifying..*", parse_mode='Markdown')
@@ -427,8 +476,8 @@ Join and press [♻ VERIFY ♻]*
             pass
 
     if query.data == "users":
-        global q_panel
         q_panel = query
+        q_type = "users"
         q_panel.edit_message_text(
             "*🍻 Bot Control Panel 🍻\n\nSend the Target user's username as a reply [usr@username]*", parse_mode='Markdown',
             reply_markup=InlineKeyboardMarkup([
@@ -533,6 +582,7 @@ Join and press [♻ VERIFY ♻]*
                     ]))
 
     if query.data == "back_menu":
+        q_type = ""
         query.edit_message_text(f'*🍻 Bot Control Panel 🍻\n\nAdmin : @{username}*', parse_mode='Markdown',
                                 reply_markup=InlineKeyboardMarkup([
                                     [InlineKeyboardButton(
@@ -575,6 +625,39 @@ Join and press [♻ VERIFY ♻]*
                                         text='🔙 Back 🔙', callback_data='back_menu')]
                                 ]))
 
+    if query.data == "broadcast":
+        q_type = "broadcast"
+        q_panel = query
+        bot = context.bot
+        query.edit_message_text(
+            text='*📣 Broadcast : Reply with the message you want to broadcast..*', parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(
+                    text='🔙 Back 🔙', callback_data='back_menu')]
+            ]))
+
+    if query.data == "send_update":
+        bot = context.bot
+        query.edit_message_text(
+            text='*♻ Sending Update.. ♻*', parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(
+                    text='🔙 Back 🔙', callback_data='back_menu')]
+            ]))
+        bot = context.bot
+        chats = chatdb.find({})
+        for chat in chats:
+            bot.send_message(chat['chat'], '*♻ !------ Bot Updated ------! ♻*', parse_mode='Markdown', reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(
+                    text='♻ Update ♻', callback_data='update')]
+            ]))
+        query.edit_message_text(
+            text='*♻ Sent Update! ♻*', parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(
+                    text='🔙 Back 🔙', callback_data='back_menu')]
+            ]))
+
     if query.data == "stats":
         query.edit_message_text(
             text='*🚀 Evaluating..*', parse_mode='Markdown')
@@ -595,6 +678,41 @@ Join and press [♻ VERIFY ♻]*
                                     [InlineKeyboardButton(
                                         text='🔙 Back 🔙', callback_data='back_menu')]
                                 ]))
+
+    if query.data == 'update':
+        query.edit_message_text(
+            text='*♻ Initializing update...\n*', parse_mode='Markdown')
+        sleep(0.5)
+        query.edit_message_text(
+            text='*♻ Updating...\n[⬛⬜⬜⬜⬜⬜⬜⬜⬜⬜]10%*', parse_mode='Markdown')
+        sleep(0.5)
+        query.edit_message_text(
+            text='*♻ Updating...\n[⬛⬛⬜⬜⬜⬜⬜⬜⬜⬜]20%*', parse_mode='Markdown')
+        sleep(0.5)
+        query.edit_message_text(
+            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬜⬜⬜⬜⬜]50%*', parse_mode='Markdown')
+        sleep(0.5)
+        query.edit_message_text(
+            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬛⬜⬜⬜⬜]60%*', parse_mode='Markdown')
+        sleep(0.5)
+        query.edit_message_text(
+            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬛⬛⬛⬛⬜]90%*', parse_mode='Markdown')
+        sleep(0.5)
+        query.edit_message_text(
+            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛]100%*', parse_mode='Markdown')
+        query.edit_message_text(
+            text='*🚀 Updated! Enjoy the new update! 🚀*', parse_mode='Markdown')
+
+        username = str(query.from_user.username)
+
+        chatid = query.from_user.id
+        bot.send_photo(chat_id=chatid, photo=IMAGE, caption=f"""
+*🔥Welcome to the {TEAM} Premium Acc Generator Bot!*\n
+You were not invited!
+
+*🔥Earn points and withdraw premium accounts!*""",
+                       reply_markup=InlineKeyboardMarkup(
+                           [[InlineKeyboardButton(text="💰 Earn 💰", callback_data='Earn')]]), parse_mode='Markdown')
 
 
 def error(update: Update, context: CallbackContext) -> None:
@@ -704,24 +822,43 @@ def withdraw(update: Update, context: CallbackContext) -> None:
 def getreply(update: Update, context: CallbackContext) -> None:
     global q_panel
     global user
-    global user
-    rep_len = len(update.message.text)
-    user = update.message.text[4:rep_len]
-    trigger = update.message.text[0:4]
-    if trigger == "usr@":
-        q_panel.edit_message_text(f"*🍻 Bot Control Panel 🍻\n\nTarget user : @{user}*", parse_mode='Markdown',
-                                  reply_markup=InlineKeyboardMarkup([
-                                      [InlineKeyboardButton(
-                                          text='♻ Search ♻', callback_data='search')],
-                                      [InlineKeyboardButton(
-                                          text='⚠ Ban ⚠', callback_data='ban')],
-                                      [InlineKeyboardButton(
-                                          text='⚡ Promote ⚡', callback_data='promote')],
-                                      [InlineKeyboardButton(
-                                          text='❌ Demote ❌', callback_data='demote')],
-                                      [InlineKeyboardButton(
-                                          text='🔙 Back 🔙', callback_data='back_menu')]
-                                  ]))
+    global q_type
+
+    if q_type == "users":
+        rep_len = len(update.message.text)
+        user = update.message.text[4:rep_len]
+        trigger = update.message.text[0:4]
+        if trigger == "usr@":
+            q_panel.edit_message_text(f"*🍻 Bot Control Panel 🍻\n\nTarget user : @{user}*", parse_mode='Markdown',
+                                      reply_markup=InlineKeyboardMarkup([
+                                          [InlineKeyboardButton(
+                                              text='♻ Search ♻', callback_data='search')],
+                                          [InlineKeyboardButton(
+                                              text='⚠ Ban ⚠', callback_data='ban')],
+                                          [InlineKeyboardButton(
+                                              text='⚡ Promote ⚡', callback_data='promote')],
+                                          [InlineKeyboardButton(
+                                              text='❌ Demote ❌', callback_data='demote')],
+                                          [InlineKeyboardButton(
+                                              text='🔙 Back 🔙', callback_data='back_menu')]
+                                      ]))
+
+    if q_type == "broadcast":
+        chats = chatdb.find({})
+        bot = context.bot
+        for chat in chats:
+            if chat['chat'] == update.effective_message.chat_id:
+                pass
+            else:
+                bot.forward_message(chat_id=chat['chat'],
+                                    from_chat_id=update.effective_message.chat_id,
+                                    message_id=update.effective_message.message_id)
+        q_panel.edit_message_text(
+            text='*📣 Broadcasted message!*', parse_mode='Markdown',
+            reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton(
+                    text='🔙 Back 🔙', callback_data='back_menu')]
+            ]))
 
 
 def pointlist(update: Update, context: CallbackContext) -> None:
@@ -761,6 +898,10 @@ def panel(update: Update, context: CallbackContext) -> None:
                                           text='💡 Users 💡', callback_data='users')],
                                       [InlineKeyboardButton(
                                           text='💳 Requests 💳', callback_data='requests')],
+                                      [InlineKeyboardButton(
+                                          text='📣 Broadcast 📣', callback_data='broadcast')],
+                                      [InlineKeyboardButton(
+                                          text='♻ Send Update ♻', callback_data='send_update')],
                                       [InlineKeyboardButton(
                                           text='🚀 Stats 🚀', callback_data='stats')]
                                   ])
@@ -836,6 +977,7 @@ print("[ACCBOT] {} Connecting to MongoDB..".format(
 client = MongoClient(MONGODB)
 db = client["accbot"]
 userdb = db["users"]
+chatdb = db["chats"]
 
 if __name__ == "__main__":
     main()
