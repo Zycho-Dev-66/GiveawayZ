@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-from re import A, I, U
-from telegram.utils import helpers
 import logging
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import (
@@ -396,6 +394,37 @@ Join and press [♻ VERIFY ♻]*
         except:
             pass
 
+    if query.data == '6':
+        username = query.from_user.username
+        index = int(query.data)
+        try:
+            pointslimit = POINT_LIST[index]
+            account = ACC_LIST[index]
+            userinfo = userdb.find_one({"username": f"{username}"})
+            withdrawals = userinfo["withdrawals"]
+            wallet = int(userinfo["wallet"])
+            if wallet > pointslimit:
+                try:
+                    r_wallet = wallet - pointslimit
+                    withdrawals.append(account)
+                    bot.send_message(
+                        PROOFS_ID, f'*🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
+                    query.edit_message_text(
+                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\nCurrent Balance: {r_wallet}\n\n🔥 Request Sent*', parse_mode='Markdown')
+                    userdb.update_one({"username": f'{username}'}, {
+                        "$set": {"wallet": r_wallet}})
+                    userdb.update_one({"username": f'{username}'}, {
+                        "$set": {"withdrawals": withdrawals}})
+                except Exception as e:
+                    query.edit_message_text(
+                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
+                    print(e)
+            else:
+                update.message.reply_text(
+                    '*❌ Insufficient Balance ❌*', parse_mode='Markdown')
+        except:
+            pass
+
     if query.data == "users":
         global q_panel
         q_panel = query
@@ -664,6 +693,10 @@ def withdraw(update: Update, context: CallbackContext) -> None:
                                           text=f"💳 {ACC_LIST[3]} 💳", callback_data='3')],
                                       [InlineKeyboardButton(
                                           text=f"💳 {ACC_LIST[4]} 💳", callback_data='4')],
+                                      [InlineKeyboardButton(
+                                          text=f"💳 {ACC_LIST[5]} 💳", callback_data='5')],
+                                      [InlineKeyboardButton(
+                                          text=f"💳 {ACC_LIST[6]} 💳", callback_data='6')],
                                   ]))
 
 
@@ -691,7 +724,7 @@ def getreply(update: Update, context: CallbackContext) -> None:
 
 
 def pointlist(update: Update, context: CallbackContext) -> None:
-    msg = f"*🔩 Point List 🔩\n\n🔩 {ACC_LIST[0]} - {POINT_LIST[0]} Points\n🔩 {ACC_LIST[1]} - {POINT_LIST[1]} Points\n🔩 {ACC_LIST[2]} - {POINT_LIST[2]} Points\n🔩 {ACC_LIST[3]} - {POINT_LIST[3]} Points\n🔩 {ACC_LIST[4]} - {POINT_LIST[4]} Points\n🔩 {ACC_LIST[5]} - {POINT_LIST[5]} Points\n*"
+    msg = f"*🔩 Point List 🔩\n\n🔩 {ACC_LIST[0]} - {POINT_LIST[0]} Points\n🔩 {ACC_LIST[1]} - {POINT_LIST[1]} Points\n🔩 {ACC_LIST[2]} - {POINT_LIST[2]} Points\n🔩 {ACC_LIST[3]} - {POINT_LIST[3]} Points\n🔩 {ACC_LIST[4]} - {POINT_LIST[4]} Points\n🔩 {ACC_LIST[5]} - {POINT_LIST[5]} Points\n🔩 {ACC_LIST[6]} - {POINT_LIST[6]} Points*"
     update.message.reply_text(msg, parse_mode='Markdown')
 
 
