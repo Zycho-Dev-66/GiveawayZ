@@ -684,22 +684,22 @@ Join and press [♻ VERIFY ♻]*
             text='*♻ Initializing update...\n*', parse_mode='Markdown')
         sleep(0.5)
         query.edit_message_text(
-            text='*♻ Updating...\n[⬛⬜⬜⬜⬜⬜⬜⬜⬜⬜]10%*', parse_mode='Markdown')
+            text='*♻ Updating...\n[▓░░░░░░░░░]10%*', parse_mode='Markdown')
         sleep(0.5)
         query.edit_message_text(
-            text='*♻ Updating...\n[⬛⬛⬜⬜⬜⬜⬜⬜⬜⬜]20%*', parse_mode='Markdown')
+            text='*♻ Updating...\n[▓▓░░░░░░░░]20%*', parse_mode='Markdown')
         sleep(0.5)
         query.edit_message_text(
-            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬜⬜⬜⬜⬜]50%*', parse_mode='Markdown')
+            text='*♻ Updating...\n[▓▓▓▓▓░░░░░]50%*', parse_mode='Markdown')
         sleep(0.5)
         query.edit_message_text(
-            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬛⬜⬜⬜⬜]60%*', parse_mode='Markdown')
+            text='*♻ Updating...\n[▓▓▓▓▓▓░░░░]60%*', parse_mode='Markdown')
         sleep(0.5)
         query.edit_message_text(
-            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬛⬛⬛⬛⬜]90%*', parse_mode='Markdown')
+            text='*♻ Updating...\n[▓▓▓▓▓▓▓▓▓░]90%*', parse_mode='Markdown')
         sleep(0.5)
         query.edit_message_text(
-            text='*♻ Updating...\n[⬛⬛⬛⬛⬛⬛⬛⬛⬛⬛]100%*', parse_mode='Markdown')
+            text='*♻ Updating...\n[▓▓▓▓▓▓▓▓▓▓]100%*', parse_mode='Markdown')
         query.edit_message_text(
             text='*🚀 Updated! Enjoy the new update! 🚀*', parse_mode='Markdown')
 
