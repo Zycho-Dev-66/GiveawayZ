@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import logging
+from telegram.utils import helpers
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import (
     Updater,
