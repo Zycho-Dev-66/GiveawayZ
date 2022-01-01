@@ -40,6 +40,7 @@ from config import (
 q_panel = 0
 target = 0
 q_type = ''
+build = []
 
 starttime = datetime.now()
 
@@ -179,21 +180,37 @@ Join and press [♻ VERIFY ♻]*
                                        ))
 
     if query.data == "Verify":
+        bot = context.bot
+        uid = update.effective_user.id
         query.edit_message_caption(
             "*♻ Verifying..*", parse_mode='Markdown')
         sleep(1)
         try:
             query.edit_message_caption(
                 f"♻ Retrieving user lists..", parse_mode='Markdown')
-            os.system('python client.py')
-            from database import users as db
+
+            mem_stat = bot.get_chat_member(
+                chat_id=f'@{USERNAME}', user_id=uid)
+
             query.edit_message_caption(
                 f"*♻ Verifying user..*\nUser id :{userid}", parse_mode='Markdown')
-            valid = 'N'
-            for id in db:
-                if id == userid:
-                    valid = 'Y'
-            if valid == "Y":
+
+            if mem_stat.status == "left":
+                query.edit_message_caption(
+                    f"*❌ Please Join all the chats..*", parse_mode='Markdown',
+                    reply_markup=InlineKeyboardMarkup(
+                        [
+                            [InlineKeyboardButton(
+                                text=f"📌 {GROUP} 📌", url=f'http://t.me/{USERNAME}')],
+                            [InlineKeyboardButton(
+                                text=f"📌 {GROUP2} 📌", url=f'http://t.me/{USERNAME2}')],
+                            [InlineKeyboardButton(
+                                text=f"📌 {GROUP3} 📌", url=f'http://t.me/{USERNAME3}')],
+                            [InlineKeyboardButton(
+                                text="♻ VERIFY ♻", callback_data='Verify')],
+                        ])
+                )
+            else:
                 query.edit_message_caption(
                     f"*💡 User verified..*\n\nID :{userid}", parse_mode='Markdown')
 
@@ -215,21 +232,6 @@ Join and press [♻ VERIFY ♻]*
                                      [KeyboardButton(
                                          '🗽 Premium 🗽')],
                                  ]))
-            else:
-                query.edit_message_caption(
-                    f"*❌ Please Join all the chats..*", parse_mode='Markdown',
-                    reply_markup=InlineKeyboardMarkup(
-                        [
-                            [InlineKeyboardButton(
-                                text=f"📌 {GROUP} 📌", url=f'http://t.me/{USERNAME}')],
-                            [InlineKeyboardButton(
-                                text=f"📌 {GROUP2} 📌", url=f'http://t.me/{USERNAME2}')],
-                            [InlineKeyboardButton(
-                                text=f"📌 {GROUP3} 📌", url=f'http://t.me/{USERNAME3}')],
-                            [InlineKeyboardButton(
-                                text="♻ VERIFY ♻", callback_data='Verify')],
-                        ]
-                    ))
 
         except Exception as e:
             query.edit_message_caption(
@@ -273,180 +275,9 @@ Join and press [♻ VERIFY ♻]*
         query.edit_message_text(
             "🔥 *Now send [🚀 Refferal 🚀] once again to obtain your refferal link and view details*", parse_mode='Markdown')
 
-    if query.data == '0':
+    if query.data[0:2] == 'rq':
         username = query.from_user.username
-        index = int(query.data)
-        try:
-            pointslimit = POINT_LIST[index]
-            account = ACC_LIST[index]
-            userinfo = userdb.find_one({"username": f"{username}"})
-            withdrawals = userinfo["withdrawals"]
-            wallet = int(userinfo["wallet"])
-            if wallet > pointslimit:
-                try:
-                    r_wallet = wallet - pointslimit
-                    withdrawals.append(account)
-                    bot.send_message(
-                        PROOFS_ID, f'*withdrawals🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
-                    query.edit_message_text(
-                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n🔥 Request Sent*', parse_mode='Markdown')
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"wallet": r_wallet}})
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"withdrawals": withdrawals}})
-                except Exception as e:
-                    query.edit_message_text(
-                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
-                    print(e)
-        except:
-            pass
-
-    if query.data == '1':
-        username = query.from_user.username
-        index = int(query.data)
-        try:
-            pointslimit = POINT_LIST[index]
-            account = ACC_LIST[index]
-            userinfo = userdb.find_one({"username": f"{username}"})
-            withdrawals = userinfo["withdrawals"]
-            wallet = int(userinfo["wallet"])
-            if wallet > pointslimit:
-                try:
-                    r_wallet = wallet - pointslimit
-                    withdrawals.append(account)
-                    bot.send_message(
-                        PROOFS_ID, f'*withdrawals🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
-                    query.edit_message_text(
-                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n🔥 Request Sent*', parse_mode='Markdown')
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"wallet": r_wallet}})
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"withdrawals": withdrawals}})
-                except Exception as e:
-                    query.edit_message_text(
-                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
-                    print(e)
-        except:
-            pass
-
-    if query.data == '2':
-        username = query.from_user.username
-        index = int(query.data)
-        try:
-            pointslimit = POINT_LIST[index]
-            account = ACC_LIST[index]
-            userinfo = userdb.find_one({"username": f"{username}"})
-            withdrawals = userinfo["withdrawals"]
-            wallet = int(userinfo["wallet"])
-            if wallet > pointslimit:
-                try:
-                    r_wallet = wallet - pointslimit
-                    withdrawals.append(account)
-                    bot.send_message(
-                        PROOFS_ID, f'*withdrawals🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
-                    query.edit_message_text(
-                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n🔥 Request Sent*', parse_mode='Markdown')
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"wallet": r_wallet}})
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"withdrawals": withdrawals}})
-                except Exception as e:
-                    query.edit_message_text(
-                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
-                    print(e)
-        except:
-            pass
-
-    if query.data == '3':
-        username = query.from_user.username
-        index = int(query.data)
-        try:
-            pointslimit = POINT_LIST[index]
-            account = ACC_LIST[index]
-            userinfo = userdb.find_one({"username": f"{username}"})
-            withdrawals = userinfo["withdrawals"]
-            wallet = int(userinfo["wallet"])
-            if wallet > pointslimit:
-                try:
-                    r_wallet = wallet - pointslimit
-                    withdrawals.append(account)
-                    bot.send_message(
-                        PROOFS_ID, f'*🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
-                    query.edit_message_text(
-                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n🔥 Request Sent*', parse_mode='Markdown')
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"wallet": r_wallet}})
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"withdrawals": withdrawals}})
-                except Exception as e:
-                    query.edit_message_text(
-                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
-                    print(e)
-        except:
-            pass
-
-    if query.data == '4':
-        username = query.from_user.username
-        index = int(query.data)
-        try:
-            pointslimit = POINT_LIST[index]
-            account = ACC_LIST[index]
-            userinfo = userdb.find_one({"username": f"{username}"})
-            wallet = int(userinfo["wallet"])
-            withdrawals = userinfo["withdrawals"]
-            if wallet > pointslimit:
-                try:
-                    r_wallet = wallet - pointslimit
-                    withdrawals.append(account)
-                    bot.send_message(
-                        PROOFS_ID, f'*withdrawals🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
-                    query.edit_message_text(
-                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n🔥 Request Sent*', parse_mode='Markdown')
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"wallet": r_wallet}})
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"withdrawals": withdrawals}})
-                except Exception as e:
-                    query.edit_message_text(
-                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
-                    print(e)
-        except:
-            pass
-
-    if query.data == '5':
-        username = query.from_user.username
-        index = int(query.data)
-        try:
-            pointslimit = POINT_LIST[index]
-            account = ACC_LIST[index]
-            userinfo = userdb.find_one({"username": f"{username}"})
-            withdrawals = userinfo["withdrawals"]
-            wallet = int(userinfo["wallet"])
-            if wallet > pointslimit:
-                try:
-                    r_wallet = wallet - pointslimit
-                    withdrawals.append(account)
-                    bot.send_message(
-                        PROOFS_ID, f'*🔥🔥🔥 Withdrawal Request 🔥🔥🔥\n\n🔥 Status : Approved\n🔥 From : @{username}\n🔥 Account : {account}\n🔥 Date : {datetime.now().strftime("%x")}\n\n🔥 Powered by @{OWNER}\n\n🔥🔥🔥 Request Listed 🔥🔥🔥*', parse_mode='Markdown')
-                    query.edit_message_text(
-                        f'*🔥 Requested an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\nCurrent Balance: {r_wallet}\n\n🔥 Request Sent*', parse_mode='Markdown')
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"wallet": r_wallet}})
-                    userdb.update_one({"username": f'{username}'}, {
-                        "$set": {"withdrawals": withdrawals}})
-                except Exception as e:
-                    query.edit_message_text(
-                        f'*⚠ Failed to request an account from the sponsers {TEAM}..\n\nAccount type : {account}\nPoints cost : {pointslimit}\n\n⚠ Request Unsent ⚠\n\nPlease forward this message to @{OWNER}*', parse_mode='Markdown')
-                    print(e)
-            else:
-                update.message.reply_text(
-                    '*❌ Insufficient Balance ❌*', parse_mode='Markdown')
-        except:
-            pass
-
-    if query.data == '6':
-        username = query.from_user.username
-        index = int(query.data)
+        index = int(query.data[2:len(query.data)])
         try:
             pointslimit = POINT_LIST[index]
             account = ACC_LIST[index]
@@ -590,6 +421,10 @@ Join and press [♻ VERIFY ♻]*
                                     [InlineKeyboardButton(
                                         text='💳 Requests 💳', callback_data='requests')],
                                     [InlineKeyboardButton(
+                                        text='📣 Broadcast 📣', callback_data='broadcast')],
+                                    [InlineKeyboardButton(
+                                        text='♻ Send Update ♻', callback_data='send_update')],
+                                    [InlineKeyboardButton(
                                         text='🚀 Stats 🚀', callback_data='stats')]
                                 ])
                                 )
@@ -646,13 +481,21 @@ Join and press [♻ VERIFY ♻]*
             ]))
         bot = context.bot
         chats = chatdb.find({})
-        for chat in chats:
-            bot.send_message(chat['chat'], '*♻ !------ Bot Updated ------! ♻*', parse_mode='Markdown', reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton(
-                    text='♻ Update ♻', callback_data='update')]
-            ]))
         query.edit_message_text(
-            text='*♻ Sent Update! ♻*', parse_mode='Markdown',
+            text='*♻ Sending update...*', parse_mode='Markdown')
+        sent = 0
+        failed = 0
+        for chat in chats:
+            try:
+                bot.send_message(chat['chat'], '*♻ !------ Bot Updated ------! ♻*', parse_mode='Markdown', reply_markup=InlineKeyboardMarkup([
+                    [InlineKeyboardButton(
+                        text='♻ Update ♻', callback_data='update')]
+                ]))
+                sent = sent + 1
+            except:
+                failed = failed + 1
+        query.edit_message_text(
+            text='*♻ Sent Update! ♻\n\nSent:{}\nFailed:{}*'.format(sent, failed), parse_mode='Markdown',
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(
                     text='🔙 Back 🔙', callback_data='back_menu')]
@@ -722,6 +565,13 @@ def error(update: Update, context: CallbackContext) -> None:
     bot.send_message(
         userid, "❌ *Oops! An error occured!*\n\nPlease notify my developers about this", parse_mode='Markdown',
         reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text="⚠ ZYCHO DEV ⚠", url='http://t.me/Zycho_66')]]))
+
+
+def buildlist():
+    global build
+    for i in range(0, len(ACC_LIST)-1):
+        build.append([InlineKeyboardButton(
+            text=f"💳 {ACC_LIST[i]} 💳", callback_data=f'rq{i}')])
 
 
 def refferal(update: Update, context: CallbackContext) -> None:
@@ -799,24 +649,10 @@ def contact(update: Update, context: CallbackContext) -> None:
 
 
 def withdraw(update: Update, context: CallbackContext) -> None:
+    buildlist()
+    global build
     update.message.reply_text("*🚀 Please select an account type to withdraw..*", parse_mode='Markdown',
-                              reply_markup=InlineKeyboardMarkup(
-                                  [
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[0]} 💳", callback_data='0')],
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[1]} 💳", callback_data='1')],
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[2]} 💳", callback_data='2')],
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[3]} 💳", callback_data='3')],
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[4]} 💳", callback_data='4')],
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[5]} 💳", callback_data='5')],
-                                      [InlineKeyboardButton(
-                                          text=f"💳 {ACC_LIST[6]} 💳", callback_data='6')],
-                                  ]))
+                              reply_markup=InlineKeyboardMarkup(build))
 
 
 def getreply(update: Update, context: CallbackContext) -> None:
@@ -846,15 +682,24 @@ def getreply(update: Update, context: CallbackContext) -> None:
     if q_type == "broadcast":
         chats = chatdb.find({})
         bot = context.bot
-        for chat in chats:
-            if chat['chat'] == update.effective_message.chat_id:
-                pass
-            else:
-                bot.forward_message(chat_id=chat['chat'],
-                                    from_chat_id=update.effective_message.chat_id,
-                                    message_id=update.effective_message.message_id)
         q_panel.edit_message_text(
-            text='*📣 Broadcasted message!*', parse_mode='Markdown',
+            text='*📣 Broadcasting message...*', parse_mode='Markdown')
+        sent = 0
+        failed = 0
+        for chat in chats:
+            try:
+                if chat['chat'] == update.effective_message.chat_id:
+                    pass
+                else:
+                    bot.forward_message(chat_id=chat['chat'],
+                                        from_chat_id=update.effective_message.chat_id,
+                                        message_id=update.effective_message.message_id)
+                sent = sent + 1
+            except:
+                failed = failed + 1
+
+        q_panel.edit_message_text(
+            text='*📣 Broadcasted message!\n\nSent:{}\nFailed:{}*'.format(sent, failed), parse_mode='Markdown',
             reply_markup=InlineKeyboardMarkup([
                 [InlineKeyboardButton(
                     text='🔙 Back 🔙', callback_data='back_menu')]
@@ -862,7 +707,10 @@ def getreply(update: Update, context: CallbackContext) -> None:
 
 
 def pointlist(update: Update, context: CallbackContext) -> None:
-    msg = f"*🔩 Point List 🔩\n\n🔩 {ACC_LIST[0]} - {POINT_LIST[0]} Points\n🔩 {ACC_LIST[1]} - {POINT_LIST[1]} Points\n🔩 {ACC_LIST[2]} - {POINT_LIST[2]} Points\n🔩 {ACC_LIST[3]} - {POINT_LIST[3]} Points\n🔩 {ACC_LIST[4]} - {POINT_LIST[4]} Points\n🔩 {ACC_LIST[5]} - {POINT_LIST[5]} Points\n🔩 {ACC_LIST[6]} - {POINT_LIST[6]} Points*"
+    length = len(ACC_LIST) - 1
+    msg = '*🔩 Points List 🔩\n*'
+    for i in range(0, length):
+        msg = msg + f'\n*🔩 {ACC_LIST[i]} - {POINT_LIST[i]}*'
     update.message.reply_text(msg, parse_mode='Markdown')
 
 
@@ -909,6 +757,22 @@ def panel(update: Update, context: CallbackContext) -> None:
     else:
         update.message.reply_text(
             f'*❌ Access Denied ❌\n\n Hey @{username}, you do not have access to my internal databases..*', parse_mode='Markdown')
+
+
+def promo(update: Update, context: CallbackContext) -> None:
+    global userdb
+    username = update.message.from_user.username
+    userinfo = userdb.find_one({"username": f"{username}"})
+    balance = userinfo["wallet"]
+    promo = balance + 5
+    try:
+        userdb.update_one({"username": f'{username}'},
+                          {"$set": {"wallet": promo}})
+        update.message.reply_text(
+            """*🎁 Claimed Promo!*\n\nSend [💰 Balance 💰] to check your balance now..""", parse_mode='Markdown')
+    except:
+        update.message.reply_text(
+            """*🎁 Unable to claim Promo*""", parse_mode='Markdown')
 
 
 def main() -> None:
@@ -960,6 +824,8 @@ def main() -> None:
         datetime.now().strftime('[ %X ]')))
     print("[ACCBOT] {} Starting the bot..".format(
         datetime.now().strftime('[ %X ]')))
+    dispatcher.add_handler(MessageHandler(
+        Filters.regex('🎁 Promo 2022 🎁'), promo))
 
     # error handlers
     dispatcher.add_error_handler(error)
