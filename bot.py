@@ -761,18 +761,30 @@ def panel(update: Update, context: CallbackContext) -> None:
 
 def promo(update: Update, context: CallbackContext) -> None:
     global userdb
+    global promodb
     username = update.message.from_user.username
     userinfo = userdb.find_one({"username": f"{username}"})
     balance = userinfo["wallet"]
     promo = balance + 5
-    try:
-        userdb.update_one({"username": f'{username}'},
-                          {"$set": {"wallet": promo}})
+    av = promodb.find_one({"username": f'{username}'})
+    if av:
         update.message.reply_text(
-            """*🎁 Claimed Promo!*\n\nSend [💰 Balance 💰] to check your balance now..""", parse_mode='Markdown')
-    except:
-        update.message.reply_text(
-            """*🎁 Unable to claim Promo*""", parse_mode='Markdown')
+            """*🎁 You have already claimed this!*""", parse_mode='Markdown')
+    else:
+        promodt = {
+            "username": f"{username}"
+        }
+        try:
+            userdb.update_one({"username": f'{username}'},
+                              {"$set": {"wallet": promo}})
+            update.message.reply_text(
+                """*🎁 Claimed Promo!*\n\nSend [💰 Balance 💰] to check your balance now..""", parse_mode='Markdown')
+
+            promodb.insert_one(promodt)
+
+        except:
+            update.message.reply_text(
+                """*🎁 Unable to claim Promo*""", parse_mode='Markdown')
 
 
 def main() -> None:
@@ -844,6 +856,7 @@ client = MongoClient(MONGODB)
 db = client["accbot"]
 userdb = db["users"]
 chatdb = db["chats"]
+promodb = db["promo"]
 
 if __name__ == "__main__":
     main()
