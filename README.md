@@ -34,6 +34,16 @@
   
 - Admin Control Panel
 
+- No API Errors (V 2.0)
+
+- Promo codes (V 2.0)
+
+- Improved updates and broadcasts (V 2.0)
+
+- Unlimited Accounts list
+
+- Fully customizable
+
 <hr>
 
 ## Deploy 🚀
@@ -74,7 +84,6 @@ python3 bot.py
 
 ## Credits ❤
 
-- LonamiWebs for [Telethon](https://github.com/LonamiWebs/Telethon)
 - Motdotla for [Dotenv](https://github.com/motdotla/dotenv)
 - python-telegram-bot for [Python-Telegram-Bot API](https://github.com/python-telegram-bot)
 - Team Zyntax for the support [#ZyntaxNation](http://t.me/Zyntax_chat_zone)
@@ -117,6 +126,14 @@ Just the teamwork spirit is enough
 ```
 
 [**🍻 DM ME ON TELEGRAM 🍻**](http://t.me/Zycho_66)
+
+## Changelog V 2.0 ♻
+
+- Minor Bug Fixes
+- Fixed Telegram API 64 Error
+- Added Broadcast,Promocodes & Update
+- Fixed Admin Panel Bug
+- Stability and Accuracy Increased
 
 ## 🍻 Contact us 🍻
 
