@@ -569,7 +569,7 @@ def error(update: Update, context: CallbackContext) -> None:
 
 def buildlist():
     global build
-    for i in range(0, len(ACC_LIST)-1):
+    for i in range(0, len(ACC_LIST)):
         build.append([InlineKeyboardButton(
             text=f"💳 {ACC_LIST[i]} 💳", callback_data=f'rq{i}')])
 
@@ -707,7 +707,7 @@ def getreply(update: Update, context: CallbackContext) -> None:
 
 
 def pointlist(update: Update, context: CallbackContext) -> None:
-    length = len(ACC_LIST) - 1
+    length = len(ACC_LIST)
     msg = '*🔩 Points List 🔩\n*'
     for i in range(0, length):
         msg = msg + f'\n*🔩 {ACC_LIST[i]} - {POINT_LIST[i]}*'
