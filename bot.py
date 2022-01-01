@@ -569,6 +569,7 @@ def error(update: Update, context: CallbackContext) -> None:
 
 def buildlist():
     global build
+    build = []
     for i in range(0, len(ACC_LIST)):
         build.append([InlineKeyboardButton(
             text=f"💳 {ACC_LIST[i]} 💳", callback_data=f'rq{i}')])
